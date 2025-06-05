@@ -7,23 +7,33 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Welcome to Crisp Alt</h1>
+  <h1>Welcome to Crisp Alt 👋</h1>
   <div class="login-container">
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    
     <select id="role">
       <option value="user">User</option>
       <option value="rep">Representative</option>
       <option value="admin">Admin</option>
     </select>
+
     <button onclick="login()">Login</button>
     <button onclick="register()">Register</button>
+
+    <p id="message"></p>
   </div>
+
+  <!-- Firebase SDKs (must come first) -->
   <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js"></script>
+
+  <!-- Firebase config (initialize app) -->
   <script src="firebase.js"></script>
+
+  <!-- App logic -->
   <script src="script.js"></script>
 </body>
 </html>
