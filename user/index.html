@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <h2>User Dashboard</h2>
+  <div class="chat-box" id="chat"></div>
+  <textarea id="messageInput" placeholder="Type your message..."></textarea>
+  <button onclick="sendMessage()">Send</button>
+  <button onclick="startRecording()">🎙 Start</button>
+  <button onclick="stopRecording()">⏹ Stop</button>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-storage.js"></script>
+  <script src="../firebase.js"></script>
+  <script>
+    const chatRef = firebase.firestore().collection('messages');
+    const chatBox = document.getElementById('chat');
+    const input = document.getElementById('messageInput');
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        chatRef.orderBy('timestamp').onSnapshot(snapshot => {
+          chatBox.innerHTML = '';
+          snapshot.forEach(doc => {
+            const msg = doc.data();
+            if (msg.type === 'text') {
+              chatBox.innerHTML += `<div class='message'><b>${msg.sender}:</b> ${msg.text}</div>`;
+            } else if (msg.type === 'audio') {
+              chatBox.innerHTML += `<div class='message'><b>${msg.sender}:</b> <audio controls src='\${msg.audioUrl}'></audio></div>`;
+            }
+          });
+        });
+      }
+    });
+
+    function sendMessage() {
+      const text = input.value;
+      if (text.trim()) {
+        chatRef.add({
+          sender: firebase.auth().currentUser.email,
+          type: 'text',
+          text,
+          timestamp: new Date()
+        });
+        input.value = '';
+      }
+    }
+
+    let mediaRecorder;
+    let audioChunks = [];
+
+    function startRecording() {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioRef = firebase.storage().ref().child('audio/' + Date.now() + '.webm');
+          audioRef.put(audioBlob).then(snapshot => snapshot.ref.getDownloadURL()).then(url => {
+            chatRef.add({
+              sender: firebase.auth().currentUser.email,
+              type: 'audio',
+              audioUrl: url,
+              timestamp: new Date()
+            });
+          });
+        };
+        mediaRecorder.start();
+      });
+    }
+
+    function stopRecording() {
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        audioChunks = [];
+      }
+    }
+  </script>
+</body>
+</html>
