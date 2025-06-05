@@ -1,10 +1,10 @@
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBmcSaNrXfAnmN8B9QNNoM03g2jxKXQ8rg",
+  authDomain: "cs-care-app1.firebaseapp.com",
+  projectId: "cs-care-app1",
+  storageBucket: "cs-care-app1.appspot.com",
+  messagingSenderId: "108171468298",
+  appId: "1:108171468298:web:2f1d5bbea6bc28b5eb89f3"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
